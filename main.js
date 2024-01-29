@@ -76,7 +76,7 @@ loader.load('remaster-portfolio.glb',
     // Display loading progress in the HTML element
     const percentage = (xhr.loaded / xhr.total) * 100;
     if (loadingProgressElement) {
-      loadingProgressElement.innerHTML = `Loading: ${percentage.toFixed(2)}%`;
+      loadingProgressElement.innerHTML = `Loading Model: Processing...`;
     }
   },
   function (error) {
