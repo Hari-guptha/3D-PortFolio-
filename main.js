@@ -44,10 +44,26 @@ const size = {
 // Scene.add(mesh)
 
 var Model = ""; 
-const loader = new GLTFLoader();
 
 
+// Assuming you have a loading manager
+const loadingManager = new THREE.LoadingManager();
+
+// Define a variable to store the loading progress
+let loadingProgress = 0;
+
+// Loader for the GLB model
+const loader = new GLTFLoader(loadingManager);
+
+// Show loading percentage in the console
+loadingManager.onProgress = function (item, loaded, total) {
+  loadingProgress = loaded / total * 100;
+  console.log(`Loading ${item}: ${loadingProgress}%`);
+};
+
+// Load the model
 loader.load('remaster-portfolio.glb', (gltf) => {
+  // Your existing code to handle the loaded model
   Model = gltf.scene;
   Model.scale.set(0.2, 0.2, 0.2);
   Model.position.set(0, 0, 0);
@@ -62,6 +78,7 @@ loader.load('remaster-portfolio.glb', (gltf) => {
   console.log('Model displayed');
 });
 
+// GUI
 gui.add(guiObject, 'wireframe').onChange(function (value) {
   Model.traverse((child) => {
     if (child.isMesh) {
@@ -70,6 +87,18 @@ gui.add(guiObject, 'wireframe').onChange(function (value) {
   });
   camera.lookAt(Model.position);
 });
+
+// You can use loadingProgress wherever you want to display the loading percentage, for example:
+// Update a loading progress element in your HTML
+function updateLoadingProgress() {
+  const loadingProgressElement = document.getElementById('loading-progress');
+  if (loadingProgressElement) {
+    loadingProgressElement.innerHTML = `Loading: ${loadingProgress.toFixed(2)}%`;
+  }
+}
+
+// Call the function to update loading progress whenever needed
+updateLoadingProgress();
 
 
 
