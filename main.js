@@ -46,36 +46,38 @@ const size = {
 var Model = ""; 
 
 
-// Assuming you have a loading manager
-const loadingManager = new THREE.LoadingManager();
+const loader = new GLTFLoader();
 
-// Define a variable to store the loading progress
-let loadingProgress = 0;
+// Find the HTML element to display loading progress
+const loadingProgressElement = document.getElementById('loading-progress');
 
-// Loader for the GLB model
-const loader = new GLTFLoader(loadingManager);
-
-// Show loading percentage in the console
-loadingManager.onProgress = function (item, loaded, total) {
-  loadingProgress = loaded / total * 100;
-  console.log(`Loading ${item}: ${loadingProgress}%`);
-};
-
-// Load the model
+// Show loading percentage in the HTML element
 loader.load('remaster-portfolio.glb', (gltf) => {
-  // Your existing code to handle the loaded model
   Model = gltf.scene;
   Model.scale.set(0.2, 0.2, 0.2);
   Model.position.set(0, 0, 0);
-  Model.rotation.y = 10
+  Model.rotation.y = 10;
+
   Model.traverse((child) => {
     if (child.isMesh) {
       child.material.wireframe = guiObject.wireframe;
     }
   });
+
   Scene.add(Model);
   camera.lookAt(Model.position);
   console.log('Model displayed');
+
+  // Remove the loading progress element after loading is complete
+  if (loadingProgressElement) {
+    loadingProgressElement.style.display = 'none';
+  }
+}, undefined, function (xhr) {
+  // Display loading progress in the HTML element
+  const percentage = (xhr.loaded / xhr.total) * 100;
+  if (loadingProgressElement) {
+    loadingProgressElement.innerHTML = `Loading: ${percentage.toFixed(2)}%`;
+  }
 });
 
 // GUI
@@ -87,18 +89,6 @@ gui.add(guiObject, 'wireframe').onChange(function (value) {
   });
   camera.lookAt(Model.position);
 });
-
-// You can use loadingProgress wherever you want to display the loading percentage, for example:
-// Update a loading progress element in your HTML
-function updateLoadingProgress() {
-  const loadingProgressElement = document.getElementById('loading-progress');
-  if (loadingProgressElement) {
-    loadingProgressElement.innerHTML = `Loading: ${loadingProgress.toFixed(2)}%`;
-  }
-}
-
-// Call the function to update loading progress whenever needed
-updateLoadingProgress();
 
 
 
