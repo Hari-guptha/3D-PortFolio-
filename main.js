@@ -47,38 +47,42 @@ var Model = "";
 
 
 const loader = new GLTFLoader();
-
-// Find the HTML element to display loading progress
 const loadingProgressElement = document.getElementById('loading-progress');
 
 // Show loading percentage in the HTML element
-loader.load('remaster-portfolio.glb', (gltf) => {
-  Model = gltf.scene;
-  Model.scale.set(0.2, 0.2, 0.2);
-  Model.position.set(0, 0, 0);
-  Model.rotation.y = 10;
+loader.load('remaster-portfolio.glb', 
+  function (gltf) {
+    Model = gltf.scene;
+    Model.scale.set(0.2, 0.2, 0.2);
+    Model.position.set(0, 0, 0);
+    Model.rotation.y = 10;
 
-  Model.traverse((child) => {
-    if (child.isMesh) {
-      child.material.wireframe = guiObject.wireframe;
+    Model.traverse((child) => {
+      if (child.isMesh) {
+        child.material.wireframe = guiObject.wireframe;
+      }
+    });
+
+    Scene.add(Model);
+    camera.lookAt(Model.position);
+    console.log('Model displayed');
+
+    // Remove the loading progress element after loading is complete
+    if (loadingProgressElement) {
+      loadingProgressElement.style.display = 'none';
     }
-  });
-
-  Scene.add(Model);
-  camera.lookAt(Model.position);
-  console.log('Model displayed');
-
-  // Remove the loading progress element after loading is complete
-  if (loadingProgressElement) {
-    loadingProgressElement.style.display = 'none';
+  },
+  function (xhr) {
+    // Display loading progress in the HTML element
+    const percentage = (xhr.loaded / xhr.total) * 100;
+    if (loadingProgressElement) {
+      loadingProgressElement.innerHTML = `Loading: ${percentage.toFixed(2)}%`;
+    }
+  },
+  function (error) {
+    console.error('Error loading model', error);
   }
-}, undefined, function (xhr) {
-  // Display loading progress in the HTML element
-  const percentage = (xhr.loaded / xhr.total) * 100;
-  if (loadingProgressElement) {
-    loadingProgressElement.innerHTML = `Loading: ${percentage.toFixed(2)}%`;
-  }
-});
+);
 
 // GUI
 gui.add(guiObject, 'wireframe').onChange(function (value) {
@@ -89,7 +93,6 @@ gui.add(guiObject, 'wireframe').onChange(function (value) {
   });
   camera.lookAt(Model.position);
 });
-
 
 
 const fontloader = new FontLoader()
