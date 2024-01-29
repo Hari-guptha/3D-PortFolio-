@@ -97,7 +97,7 @@ gui.add(guiObject, 'wireframe').onChange(function (value) {
 
 const fontloader = new FontLoader()
 fontloader.load('typefont.json',(font)=>{
-  const textgemontry = new TextGeometry('Hari Guptha',{
+  const textgemontry = new TextGeometry('3D Map',{
     font,
     size:0.5,
     height:0.2,
